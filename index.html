@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#142629">
+  <meta name="description" content="LabelLens helps you read packaged product labels through your own allergies, triggers and goals.">
+  <title>LabelLens — See what matters on the label</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f8f4;
+      --surface: #ffffff;
+      --dark: #142629;
+      --text: #1e3430;
+      --muted: #506a5e;
+      --green-light: #ddf0e2;
+      --green-mid: #267254;
+      --green-deep: #164e3b;
+      --amber: #e89f51;
+      --amber-light: #fff6e8;
+      --amber-deep: #7a4a12;
+      --red-light: #fff5f5;
+      --red-border: #f5c4c4;
+      --red-text: #7a1f1f;
+      --border: #d8e5dc;
+      --radius-sm: 10px;
+      --radius-md: 18px;
+      --radius-lg: 26px;
+    }
+    * { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+    }
+    a { color: inherit; }
+    button { font: inherit; cursor: pointer; }
+    button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 3px solid var(--amber);
+      outline-offset: 3px;
+    }
+    img { display: block; max-width: 100%; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+    /* Nav */
+    .nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; }
+    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-size: 19px; font-weight: 700; letter-spacing: -0.03em; }
+    .brand-icon {
+      width: 32px; height: 32px;
+      background: var(--green-light);
+      border: 2px solid var(--green-deep);
+      border-radius: var(--radius-sm);
+      display: grid; place-items: center;
+      font-weight: 800; color: var(--green-deep); font-size: 15px;
+    }
+    .nav-links { display: flex; gap: 28px; align-items: center; font-size: 14px; font-weight: 500; }
+    .nav-links a { text-decoration: none; }
+    .nav-links a:hover { text-decoration: underline; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      border: none; border-radius: 999px;
+      padding: 13px 24px; font-size: 14px; font-weight: 700;
+      text-decoration: none; white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .btn-primary { background: var(--green-deep); color: #fff; }
+    .btn-primary:hover { background: #1d6049; }
+    .btn-soft { background: var(--green-light); color: var(--green-deep); }
+    .btn-soft:hover { background: #c8e8cf; }
+    .btn-lg { padding: 16px 30px; font-size: 15px; }
+
+    /* Hero */
+    .hero {
+      background: var(--dark); color: #fff;
+      border-radius: var(--radius-lg); overflow: hidden;
+      padding: 60px 56px;
+      display: grid; grid-template-columns: 1.1fr 0.9fr;
+      gap: 40px; align-items: center;
+    }
+    .hero-content { max-width: 560px; }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(186,241,206,0.15); color: #b5ecc8;
+      font-size: 13px; font-weight: 600;
+      padding: 6px 14px; border-radius: 999px; margin-bottom: 22px;
+    }
+    .hero h1 {
+      font-size: clamp(38px,4.8vw,62px);
+      line-height: 1.06; letter-spacing: -0.04em;
+      font-weight: 700; margin-bottom: 20px;
+    }
+    .hero h1 span { color: #baf1ce; }
+    .hero p { font-size: 17px; line-height: 1.7; color: #c8ddd0; max-width: 480px; margin-bottom: 28px; }
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+    .hero-link { color: #d2ecd9; font-size: 14px; font-weight: 600; text-underline-offset: 4px; }
+
+    /* Hero mock */
+    .hero-mock {
+      background: var(--bg); border-radius: 20px; padding: 16px;
+      color: var(--text); box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+      max-width: 400px; margin-left: auto;
+    }
+    .mock-header { display: flex; justify-content: space-between; padding: 4px 6px 14px; font-size: 12px; font-weight: 700; color: var(--muted); }
+    .mock-profile { background: var(--green-light); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
+    .mock-profile-label { font-size: 11px; font-weight: 700; color: var(--green-mid); text-transform: uppercase; letter-spacing: 0.08em; }
+    .mock-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+    .mock-tag { font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 999px; background: #fff; border: 1px solid var(--border); }
+    .mock-tag.allergy { background: #ffeaea; border-color: var(--red-border); color: var(--red-text); }
+    .mock-tag.trigger { background: var(--amber-light); border-color: #f0d8b0; color: var(--amber-deep); }
+    .mock-tag.goal { background: #e8f0ff; border-color: #c4d8f5; color: #2a4a7a; }
+    .mock-result { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
+    .mock-result-head { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+    .mock-ingredient { font-size: 13px; color: var(--muted); line-height: 1.6; }
+    .mock-ingredient mark { background: #ffd6d6; border-radius: 3px; padding: 1px 3px; color: var(--red-text); font-weight: 600; }
+    .mock-finding { margin-top: 10px; display: flex; gap: 10px; align-items: flex-start; background: var(--red-light); border-radius: 10px; padding: 10px 12px; }
+    .mock-finding-icon { width: 22px; height: 22px; flex: none; border-radius: 50%; background: var(--red-border); color: var(--red-text); display: grid; place-items: center; font-size: 12px; font-weight: 800; }
+    .mock-finding p { font-size: 12px; color: #5a3030; line-height: 1.5; }
+    .mock-finding strong { font-size: 12px; color: var(--red-text); }
+
+    /* Sections */
+    .section { padding: 90px 0; }
+    .section-label { color: var(--green-mid); font-size: 13px; font-weight: 700; letter-spacing: 0.06em; margin-bottom: 10px; }
+    .section h2 { font-size: clamp(28px,3.5vw,44px); line-height: 1.12; letter-spacing: -0.035em; font-weight: 700; margin-bottom: 14px; }
+    .section-intro { color: var(--muted); font-size: 16px; line-height: 1.7; max-width: 600px; }
+
+    /* Steps */
+    .steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 40px; }
+    .step { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 28px 24px; }
+    .step-num { width: 36px; height: 36px; border-radius: 10px; background: var(--green-light); color: var(--green-deep); display: grid; place-items: center; font-weight: 700; font-size: 14px; margin-bottom: 20px; }
+    .step h3 { font-size: 18px; letter-spacing: -0.02em; margin-bottom: 8px; }
+    .step p { color: var(--muted); font-size: 15px; line-height: 1.65; }
+
+    /* Try it (the working feature) */
+    .try-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 44px;
+      margin-top: 20px;
+    }
+    .try-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 18px; }
+    .form-group label { font-size: 14px; font-weight: 600; }
+    .form-group select, .form-group input[type="text"] {
+      font: inherit; font-size: 14px; padding: 11px 14px;
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      background: #fff; color: var(--text);
+    }
+    .form-group select:hover, .form-group input[type="text"]:hover { border-color: var(--green-mid); }
+    .form-group .hint { font-size: 12px; color: var(--muted); }
+
+    .photo-box {
+      min-height: 240px; border: 2px dashed var(--border);
+      border-radius: var(--radius-md); background: #f7faf7;
+      display: grid; place-items: center; padding: 20px;
+      text-align: center; color: var(--muted); font-size: 14px;
+    }
+    .photo-box img { max-height: 300px; object-fit: contain; border-radius: 8px; }
+
+    #label-photo { display: block; width: 100%; max-width: 400px; font: inherit; color: var(--text); font-size: 14px; }
+    #label-photo::file-selector-button {
+      background: var(--green-deep); color: #fff; border: 0; border-radius: var(--radius-sm);
+      padding: 11px 16px; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; margin-right: 12px;
+    }
+    #label-photo::file-selector-button:hover { background: #1d6049; }
+
+    .action-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+    #check-label-btn {
+      background: var(--green-deep); color: #fff; border: none; border-radius: var(--radius-sm);
+      padding: 14px 24px; font-weight: 700; font-size: 15px;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    #check-label-btn:hover { background: #1d6049; }
+    #check-label-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    #remove-photo {
+      background: #f0f4f1; color: var(--muted); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 11px 16px; font-weight: 600; font-size: 13px; display: none;
+    }
+    #remove-photo:hover { background: #e4ebe6; }
+
+    #photo-status { font-size: 14px; color: var(--muted); font-weight: 500; margin-top: 8px; }
+
+    /* Labels checked counter */
+    .check-counter {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--green-light); border-radius: 999px;
+      padding: 8px 18px; font-size: 14px; font-weight: 600; color: var(--green-deep);
+      margin-bottom: 20px;
+    }
+    .check-counter strong { font-size: 18px; }
+
+    /* Result card */
+    #analysis-result { display: none; margin-top: 24px; }
+    .result-card {
+      border-radius: var(--radius-md); padding: 24px;
+      border: 1px solid var(--border); background: var(--surface);
+    }
+    .result-card.found { border-color: var(--red-border); background: var(--red-light); }
+    .result-card.not-found { border-color: #b4dfc4; background: #f0faf3; }
+    .result-card.cannot-determine { border-color: #f0d8b0; background: var(--amber-light); }
+    .result-badge {
+      display: inline-block; padding: 5px 14px; border-radius: 999px;
+      font-size: 13px; font-weight: 700; margin-bottom: 12px;
+    }
+    .result-card.found .result-badge { background: #f5c4c4; color: var(--red-text); }
+    .result-card.not-found .result-badge { background: #c8e8cf; color: #1a5c30; }
+    .result-card.cannot-determine .result-badge { background: #f0d8b0; color: var(--amber-deep); }
+    .result-body { font-size: 14px; line-height: 1.7; color: var(--text); white-space: pre-line; }
+    .result-disclaimer { font-size: 12px; color: var(--muted); margin-top: 12px; line-height: 1.5; }
+
+    /* Error display */
+    .error-msg { background: #fff0f0; border: 1px solid var(--red-border); border-radius: var(--radius-sm); padding: 14px; font-size: 14px; color: var(--red-text); margin-top: 14px; display: none; }
+
+    /* Sample results */
+    .samples {
+      background: #eaf3ed; border-radius: var(--radius-lg); padding: 48px;
+      display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 40px; align-items: start;
+    }
+    .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 20px; }
+    .tab {
+      background: var(--surface); border: 1px solid var(--border); color: var(--green-deep);
+      padding: 10px 16px; border-radius: 999px; font-weight: 600; font-size: 14px; min-height: 44px;
+    }
+    .tab:hover { background: #e0ede3; }
+    .tab[aria-selected="true"] { background: var(--green-deep); color: #fff; border-color: var(--green-deep); }
+    .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 28px; box-shadow: 0 8px 30px rgba(20,60,35,0.06); }
+    .panel-type { font-size: 12px; color: var(--green-mid); font-weight: 700; letter-spacing: 0.06em; }
+    .panel h3 { font-size: 22px; letter-spacing: -0.03em; margin: 8px 0 14px; }
+    .label-text { background: #f5f8f5; padding: 16px; border-radius: 10px; font-size: 14px; color: #3a4f44; line-height: 1.65; }
+    .label-text mark { background: #ffd6d6; border-radius: 3px; padding: 1px 3px; color: var(--red-text); font-weight: 600; }
+    .callout { border-left: 4px solid var(--amber); padding: 12px 16px; margin-top: 16px; background: var(--amber-light); border-radius: 0 8px 8px 0; }
+    .callout strong { font-size: 14px; display: block; }
+    .callout span { display: block; color: #665743; font-size: 13px; line-height: 1.55; margin-top: 4px; }
+    .panel-note { font-size: 13px; color: var(--muted); line-height: 1.5; margin-top: 14px; }
+
+    /* Promise */
+    .promise { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+    .promise-quote { background: var(--dark); color: #f0fff3; border-radius: var(--radius-lg); padding: 36px; font-size: 22px; line-height: 1.4; letter-spacing: -0.02em; }
+    .promise-quote span { color: #b9edc7; }
+    .promise ul { padding-left: 20px; color: var(--muted); line-height: 2; font-size: 15px; }
+
+    /* CTA */
+    .cta-banner {
+      background: var(--green-light); border-radius: var(--radius-lg); padding: 52px 48px;
+      display: flex; align-items: center; justify-content: space-between; gap: 30px;
+    }
+    .cta-banner h2 { margin-bottom: 10px; }
+    .cta-banner p { color: var(--muted); max-width: 520px; line-height: 1.6; }
+
+    /* Footer */
+    .footer { padding: 30px 0 50px; color: var(--muted); font-size: 13px; display: flex; justify-content: space-between; gap: 20px; line-height: 1.5; }
+
+    /* Responsive */
+    @media (max-width: 850px) {
+      .hero { grid-template-columns: 1fr; padding: 44px 28px; gap: 36px; }
+      .hero-mock { margin-left: 0; max-width: 100%; }
+      .steps { grid-template-columns: 1fr; }
+      .try-grid { grid-template-columns: 1fr; }
+      .samples { grid-template-columns: 1fr; padding: 32px 24px; }
+      .promise { grid-template-columns: 1fr; }
+      .cta-banner { flex-direction: column; align-items: flex-start; padding: 36px 28px; }
+      .section { padding: 60px 0; }
+    }
+    @media (max-width: 560px) {
+      .wrap { padding: 0 16px; }
+      .nav-links a:not(.btn) { display: none; }
+      .hero { border-radius: var(--radius-md); padding: 36px 20px; }
+      .hero h1 { font-size: clamp(32px,10vw,42px); }
+      .try-card { padding: 28px 20px; }
+      .samples { padding: 24px 16px; }
+      .tab { flex: 1 1 auto; text-align: center; }
+      .promise-quote { font-size: 19px; padding: 28px; }
+      .footer { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <div class="wrap">
+    <header class="nav">
+      <a class="brand" href="#top" aria-label="LabelLens home">
+        <span class="brand-icon" aria-hidden="true">L</span> LabelLens
+      </a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="#how">How it works</a>
+        <a href="#samples">Examples</a>
+        <a class="btn btn-soft" href="#try">Check a label</a>
+      </nav>
+    </header>
+  </div>
+
+  <main id="top" class="wrap">
+
+    <!-- Hero -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-content">
+        <div class="hero-badge">For people who check labels before they buy</div>
+        <h1 id="hero-title">Your label. <span>Your concerns.</span> One check.</h1>
+        <p>LabelLens reads packaged food, skincare and household labels against your recorded allergies, triggers and goals. It shows you exactly which words matched and why they matter to you, not to everyone in general.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary btn-lg" href="#try">Check a label now</a>
+          <a class="hero-link" href="#how">See how it works</a>
+        </div>
+      </div>
+      <div class="hero-mock" aria-label="Illustrative profile and result">
+        <div class="mock-header"><span>Your profile</span><span>Label check</span></div>
+        <div class="mock-profile">
+          <div class="mock-profile-label">Your recorded concerns</div>
+          <div class="mock-tags">
+            <span class="mock-tag allergy">Peanut allergy</span>
+            <span class="mock-tag trigger">Fragrance trigger</span>
+            <span class="mock-tag goal">Reduce sugar</span>
+          </div>
+        </div>
+        <div class="mock-result">
+          <div class="mock-result-head">Cocoa oat snack</div>
+          <p class="mock-ingredient">Oats, <mark>peanut flour</mark>, cocoa, sugar, sunflower oil, salt.</p>
+          <div class="mock-finding">
+            <span class="mock-finding-icon" aria-hidden="true">!</span>
+            <div>
+              <strong>Allergy match: peanut flour</strong>
+              <p>This phrase matches your recorded peanut allergy.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section id="how" class="section">
+      <div class="section-label">How it works</div>
+      <h2>From tiny print to a clear, personal explanation.</h2>
+      <p class="section-intro">The same label raises different questions for different people. LabelLens keeps your reason visible at every step.</p>
+      <div class="steps">
+        <article class="step"><div class="step-num">1</div><h3>Pick a category</h3><p>Choose whether you are checking a packaged food, personal care, or household product label.</p></article>
+        <article class="step"><div class="step-num">2</div><h3>Snap or upload a label</h3><p>Take a photo of the ingredient panel or upload one from your gallery. Enter the ingredient you want to check for.</p></article>
+        <article class="step"><div class="step-num">3</div><h3>See the finding</h3><p>LabelLens tells you whether the term was found, shows the exact phrase, and states what the check does not establish.</p></article>
+      </div>
+    </section>
+
+    <!-- Try it: the working AI feature -->
+    <section id="try" class="section" style="padding-top:0;">
+      <div class="section-label">Try it yourself</div>
+      <h2>Check an ingredient label right now.</h2>
+      <p class="section-intro" style="margin-bottom:10px;">Upload a photo of any ingredient panel, name one ingredient to check, and see the result. Powered by AI.</p>
+      <div class="check-counter" aria-live="polite">Labels checked: <strong id="total-count">...</strong></div>
+
+      <div class="try-card">
+        <div class="try-grid">
+          <!-- Left: form -->
+          <div>
+            <div class="form-group">
+              <label for="category">Product category</label>
+              <select id="category">
+                <option value="">Select a category</option>
+                <option value="Packaged food">Packaged food</option>
+                <option value="Personal care">Personal care</option>
+                <option value="Household">Household</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="ingredient-term">Ingredient to check for</label>
+              <input id="ingredient-term" type="text" placeholder="e.g. peanut, fragrance, SLS" maxlength="60">
+              <span class="hint">One term at a time. Max 60 characters.</span>
+            </div>
+            <div class="form-group">
+              <label for="label-photo">Label photo</label>
+              <input id="label-photo" type="file" accept="image/jpeg,image/png,image/webp" capture="environment">
+              <span class="hint">JPEG, PNG or WebP. Max 3 MB. Your image is not stored.</span>
+            </div>
+            <div class="action-row">
+              <button id="check-label-btn" type="button">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6.5 1a5.5 5.5 0 014.38 8.82l3.65 3.65a.75.75 0 01-1.06 1.06l-3.65-3.65A5.5 5.5 0 116.5 1zm0 1.5a4 4 0 100 8 4 4 0 000-8z" fill="currentColor"/></svg>
+                Check this label
+              </button>
+              <button id="remove-photo" type="button">Remove photo</button>
+            </div>
+            <p id="photo-status" role="status" aria-live="polite"></p>
+            <div id="error-msg" class="error-msg"></div>
+          </div>
+          <!-- Right: photo preview -->
+          <div class="photo-box" id="photo-box">
+            <span id="photo-placeholder">Your label photo will appear here.</span>
+            <img id="photo-preview" alt="Selected label photo preview" hidden>
+          </div>
+        </div>
+
+        <!-- Result (appears below the grid after checking) -->
+        <div id="analysis-result">
+          <div id="result-card" class="result-card">
+            <span class="result-badge" id="result-badge"></span>
+            <div class="result-body" id="result-body"></div>
+            <p class="result-disclaimer">LabelLens reads supplied label text. It does not diagnose conditions, verify completeness, or certify product safety. Always check the current package.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sample results -->
+    <section id="samples" class="section" style="padding-top: 20px;">
+      <div class="samples" aria-labelledby="samples-title">
+        <div>
+          <div class="section-label">Sample results</div>
+          <h2 id="samples-title">One label. Different reasons to look.</h2>
+          <p class="section-intro">Switch categories to see how a peanut allergy, a fragrance trigger, and a detergent preference each change the result.</p>
+          <div class="tabs" role="tablist" aria-label="Sample product category">
+            <button id="tab-food" class="tab" type="button" role="tab" aria-controls="sample-panel" aria-selected="true" tabindex="0" data-kind="food">Food</button>
+            <button id="tab-skin" class="tab" type="button" role="tab" aria-controls="sample-panel" aria-selected="false" tabindex="-1" data-kind="skin">Face wash</button>
+            <button id="tab-home" class="tab" type="button" role="tab" aria-controls="sample-panel" aria-selected="false" tabindex="-1" data-kind="home">Detergent</button>
+          </div>
+        </div>
+        <div id="sample-panel" class="panel" role="tabpanel" aria-labelledby="tab-food" tabindex="0">
+          <div class="panel-type" id="example-type">Food / Ingredient list</div>
+          <h3 id="example-title">Cocoa oat snack</h3>
+          <div class="label-text" id="example-label">Oats, <mark>peanut flour</mark>, cocoa, sugar, sunflower oil, salt.</div>
+          <div class="callout">
+            <strong id="example-result">Allergy match: peanut flour</strong>
+            <span id="example-explain">"Peanut flour" appears in the sample ingredients and matches the sample user's peanut allergy.</span>
+          </div>
+          <p class="panel-note" id="example-note">This example covers only the words shown. It cannot establish whether a product is safe. Check the current package and any warnings.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Promise -->
+    <section class="section promise">
+      <div>
+        <div class="section-label">Why it is personal</div>
+        <h2>More than a generic ingredient lookup.</h2>
+        <p class="section-intro" style="margin-bottom:20px;">A peanut match, a fragrance trigger, and a goal to reduce preservatives should not look like the same alert. LabelLens keeps the reason attached to every finding.</p>
+        <ul>
+          <li>Findings point to the exact words found on the label.</li>
+          <li>Nutrition values come from the printed panel, not guesses.</li>
+          <li>Unclear or missing information stays visible, not hidden.</li>
+        </ul>
+      </div>
+      <div class="promise-quote">"The ingredients are the same. <span>What matters on that label is personal.</span>"</div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section" style="padding-bottom: 20px;">
+      <div class="cta-banner">
+        <div>
+          <div class="section-label">Try it live</div>
+          <h2>Check a real label right now.</h2>
+          <p>Upload a photo of any packaged product's ingredient panel and see how LabelLens reads it for the ingredient you care about.</p>
+        </div>
+        <a class="btn btn-primary btn-lg" href="#try">Check a label</a>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="wrap">
+    <footer class="footer">
+      <span>&copy; 2026 LabelLens &middot; A concept by Shruthi Muralidaran</span>
+      <span>LabelLens explains supplied labels. It does not diagnose conditions or certify product safety.</span>
+    </footer>
+  </div>
+
+  <script>
+    // ===== CONFIG =====
+    const API_URL = '/api/check-label';
+    const MAX_CHECKS_PER_DAY = 5;
+
+    // ===== ELEMENTS =====
+    const categoryEl = document.getElementById('category');
+    const termEl = document.getElementById('ingredient-term');
+    const photoInput = document.getElementById('label-photo');
+    const photoPreview = document.getElementById('photo-preview');
+    const photoPlaceholder = document.getElementById('photo-placeholder');
+    const photoStatus = document.getElementById('photo-status');
+    const removeBtn = document.getElementById('remove-photo');
+    const checkBtn = document.getElementById('check-label-btn');
+    const errorMsg = document.getElementById('error-msg');
+    const analysisResult = document.getElementById('analysis-result');
+    const resultCard = document.getElementById('result-card');
+    const resultBadge = document.getElementById('result-badge');
+    const resultBody = document.getElementById('result-body');
+    const totalCount = document.getElementById('total-count');
+
+    let currentFile = null;
+
+    // ===== LOAD COUNT ON PAGE LOAD =====
+    (async function loadCount() {
+      try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        totalCount.textContent = data.total || 0;
+      } catch { totalCount.textContent = '0'; }
+    })();
+
+    // ===== PHOTO HANDLING =====
+    photoInput.addEventListener('change', () => {
+      const file = photoInput.files[0];
+      if (!file) return;
+      const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+      if (!allowed.includes(file.type)) {
+        showError('Please choose a JPEG, PNG, or WebP image.');
+        clearPhoto(); return;
+      }
+      if (file.size > 3 * 1024 * 1024) {
+        showError('Image is too large. Maximum 3 MB.');
+        clearPhoto(); return;
+      }
+      hideError();
+      currentFile = file;
+      const url = URL.createObjectURL(file);
+      photoPreview.src = url;
+      photoPreview.hidden = false;
+      photoPlaceholder.hidden = true;
+      removeBtn.style.display = 'inline-flex';
+      photoStatus.textContent = 'Photo loaded.';
+    });
+
+    removeBtn.addEventListener('click', clearPhoto);
+
+    function clearPhoto() {
+      currentFile = null;
+      photoInput.value = '';
+      photoPreview.removeAttribute('src');
+      photoPreview.hidden = true;
+      photoPlaceholder.hidden = false;
+      removeBtn.style.display = 'none';
+      photoStatus.textContent = '';
+      analysisResult.style.display = 'none';
+    }
+
+    // ===== RATE LIMITING (client side) =====
+    function getChecksToday() {
+      try {
+        const stored = JSON.parse(localStorage.getItem('ll_checks') || '{}');
+        const today = new Date().toISOString().slice(0, 10);
+        if (stored.date !== today) return 0;
+        return stored.count || 0;
+      } catch { return 0; }
+    }
+    function incrementChecks() {
+      const today = new Date().toISOString().slice(0, 10);
+      const current = getChecksToday();
+      localStorage.setItem('ll_checks', JSON.stringify({ date: today, count: current + 1 }));
+    }
+
+    // ===== CHECK LABEL =====
+    checkBtn.addEventListener('click', async () => {
+      hideError();
+      analysisResult.style.display = 'none';
+
+      // Validate
+      const category = categoryEl.value;
+      const term = termEl.value.trim();
+      if (!category) { showError('Please select a product category.'); return; }
+      if (!term) { showError('Please enter an ingredient to check.'); return; }
+      if (term.length > 60) { showError('Ingredient term is too long. Keep it under 60 characters.'); return; }
+      if (!currentFile) { showError('Please upload a label photo.'); return; }
+
+      // Rate limit
+      if (getChecksToday() >= MAX_CHECKS_PER_DAY) {
+        showError('You have reached the daily limit of ' + MAX_CHECKS_PER_DAY + ' checks. Come back tomorrow.');
+        return;
+      }
+
+      // Read file as base64
+      checkBtn.disabled = true;
+      checkBtn.textContent = 'Checking...';
+
+      try {
+        const base64 = await fileToBase64(currentFile);
+        const body = {
+          image_base64: base64,
+          mime_type: currentFile.type,
+          category: category,
+          ingredient_term: term,
+        };
+
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showError(data.error || 'Something went wrong. Please try again.');
+          resetBtn(); return;
+        }
+
+        // Show result
+        incrementChecks();
+        totalCount.textContent = data.total || '?';
+        displayResult(data.answer);
+      } catch (err) {
+        showError('Could not reach the server. Check your connection and try again.');
+      }
+      resetBtn();
+    });
+
+    function displayResult(answer) {
+      // Determine result type for styling
+      const lower = answer.toLowerCase();
+      let type = 'cannot-determine';
+      let badge = 'Cannot determine';
+      if (lower.includes('result: found') && !lower.includes('not found')) {
+        type = 'found'; badge = 'Found on label';
+      } else if (lower.includes('not found in readable text')) {
+        type = 'not-found'; badge = 'Not found in readable text';
+      }
+
+      resultCard.className = 'result-card ' + type;
+      resultBadge.textContent = badge;
+      resultBody.textContent = answer;
+      analysisResult.style.display = 'block';
+      analysisResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // ===== HELPERS =====
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.readAsDataURL(file);
+      });
+    }
+    function showError(msg) { errorMsg.textContent = msg; errorMsg.style.display = 'block'; }
+    function hideError() { errorMsg.style.display = 'none'; }
+    function resetBtn() {
+      checkBtn.disabled = false;
+      checkBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6.5 1a5.5 5.5 0 014.38 8.82l3.65 3.65a.75.75 0 01-1.06 1.06l-3.65-3.65A5.5 5.5 0 116.5 1zm0 1.5a4 4 0 100 8 4 4 0 000-8z" fill="currentColor"/></svg> Check this label';
+    }
+
+    // ===== SAMPLE TABS =====
+    const examples = {
+      food: { type:'Food / Ingredient list', title:'Cocoa oat snack', label:'Oats, <mark>peanut flour</mark>, cocoa, sugar, sunflower oil, salt.', result:'Allergy match: peanut flour', explain:'"Peanut flour" appears in the sample ingredients and matches the sample user\'s peanut allergy.', note:'This example covers only the words shown. It cannot establish whether a product is safe. Check the current package and any warnings.' },
+      skin: { type:'Personal care / Ingredient list', title:'Daily face wash', label:'Aqua, glycerin, cocamidopropyl betaine, <mark>parfum</mark>, citric acid.', result:'Trigger match: fragrance (parfum)', explain:'"Parfum" is highlighted because the sample user has recorded fragrance as a known skin trigger.', note:'A listed ingredient may matter differently to each person. Review the current product label.' },
+      home: { type:'Household / Ingredient list', title:'Laundry detergent', label:'Surfactants, enzymes, <mark>fragrance</mark>, preservatives.', result:'Preference match: fragrance', explain:'"Fragrance" is listed and relates to the sample user\'s preference to avoid scented detergents.', note:'This is an illustrative match, not a product approval or a medical assessment.' }
+    };
+    const tabs = [...document.querySelectorAll('.tab')];
+    function selectSample(btn) {
+      tabs.forEach(t => { t.setAttribute('aria-selected', String(t === btn)); t.tabIndex = t === btn ? 0 : -1; });
+      document.getElementById('sample-panel').setAttribute('aria-labelledby', btn.id);
+      const ex = examples[btn.dataset.kind];
+      document.getElementById('example-type').textContent = ex.type;
+      document.getElementById('example-title').textContent = ex.title;
+      document.getElementById('example-label').innerHTML = ex.label;
+      document.getElementById('example-result').textContent = ex.result;
+      document.getElementById('example-explain').textContent = ex.explain;
+      document.getElementById('example-note').textContent = ex.note;
+    }
+    tabs.forEach((btn, i) => {
+      btn.addEventListener('click', () => selectSample(btn));
+      btn.addEventListener('keydown', e => {
+        let n = i;
+        if (e.key==='ArrowRight') n=(i+1)%tabs.length;
+        else if (e.key==='ArrowLeft') n=(i-1+tabs.length)%tabs.length;
+        else if (e.key==='Home') n=0;
+        else if (e.key==='End') n=tabs.length-1;
+        else return;
+        e.preventDefault(); selectSample(tabs[n]); tabs[n].focus();
+      });
+    });
+  </script>
+</body>
+</html>
