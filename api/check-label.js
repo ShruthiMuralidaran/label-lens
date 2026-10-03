@@ -87,7 +87,7 @@ export default async function handler(req, res) {
 
   try {
     // ---------- Call Gemini ----------
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${GEMINI_API_KEY}`;
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${GEMINI_API_KEY}`;
 
     const userMessage = `Product category: ${category}\nIngredient to check: ${ingredient_term}\n\nThe attached photo is the product's ingredient panel. Check it now.`;
 
